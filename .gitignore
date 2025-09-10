@@ -1,0 +1,32 @@
+# --- Python cache files ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Virtual Environment ---
+env/
+venv/
+ENV/
+.venv/
+*.env
+
+# --- OS specific ---
+.DS_Store
+Thumbs.db
+
+# --- IDE specific ---
+.vscode/
+.idea/
+
+# --- Logs ---
+*.log
+
+# --- Local output files ---
+output.csv
+
+# --- Jupyter Notebook checkpoints (if used later) ---
+.ipynb_checkpoints/
+
+# --- Other ---
+*.sqlite3
