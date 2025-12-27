@@ -11,16 +11,15 @@ import matplotlib.pyplot as plt
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-# ----------------------------
 # Config
-# ----------------------------
+
 BASE_URL = "https://quotes.toscrape.com/"
 START_PATH = "page/1/"
 OUTPUT_EXCEL = "quotes_analysis.xlsx"
 PLOTS_DIR = "plots"
 REQUEST_TIMEOUT = 8
 SLEEP_BETWEEN_PAGES = 1.0
-FETCH_AUTHOR_METADATA = True  # grabs author born date/location/description
+FETCH_AUTHOR_METADATA = True  
 USER_AGENT = "Mozilla/5.0 (compatible; OutlierPlaygroundBot/1.0; +https://outlier.ai/)"
 
 logging.basicConfig(
@@ -28,9 +27,9 @@ logging.basicConfig(
     format="%(asctime)s | %(levelname)s | %(message)s"
 )
 
-# ----------------------------
+
 # HTTP session with retries
-# ----------------------------
+
 def make_session() -> requests.Session:
     session = requests.Session()
     session.headers.update({"User-Agent": USER_AGENT})
@@ -48,9 +47,7 @@ def make_session() -> requests.Session:
 
 SESSION = make_session()
 
-# ----------------------------
-# Helpers
-# ----------------------------
+
 def get_soup(url: str) -> BeautifulSoup | None:
     try:
         r = SESSION.get(url, timeout=REQUEST_TIMEOUT)
@@ -105,7 +102,7 @@ def scrape_quotes_site(start_url: str) -> list[dict]:
         logging.info(f"Scraping page {page_number}: {next_url}")
         soup = get_soup(next_url)
         if not soup:
-            # Stop on persistent failure (or you can continue)
+            # Stop on persistent failure
             break
 
         quote_blocks = soup.find_all("div", class_="quote")
@@ -155,9 +152,7 @@ def scrape_quotes_site(start_url: str) -> list[dict]:
 
     return all_rows
 
-# ----------------------------
-# Analysis + Export (Pandas/Excel/Matplotlib)
-# ----------------------------
+
 def analyze_and_export(rows: list[dict], output_excel: str = OUTPUT_EXCEL):
     if not rows:
         logging.warning("No data collected. Nothing to export.")
@@ -214,7 +209,7 @@ def analyze_and_export(rows: list[dict], output_excel: str = OUTPUT_EXCEL):
     plt.savefig(tags_plot_path, dpi=200)
     plt.close()
 
-    # Excel export (raw + summaries)
+    # Excel export 
     with pd.ExcelWriter(output_excel, engine="openpyxl") as writer:
         df.drop(columns=["tags_list"], errors="ignore").to_excel(writer, index=False, sheet_name="raw_quotes")
         quotes_per_author.to_excel(writer, index=False, sheet_name="summary_authors")
@@ -223,9 +218,7 @@ def analyze_and_export(rows: list[dict], output_excel: str = OUTPUT_EXCEL):
     logging.info(f"Saved Excel: {output_excel}")
     logging.info(f"Saved plots: {authors_plot_path}, {tags_plot_path}")
 
-# ----------------------------
-# Run
-# ----------------------------
+
 if __name__ == "__main__":
     start_url = urljoin(BASE_URL, START_PATH)
 
